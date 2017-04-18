@@ -9,46 +9,46 @@
 </head>
 <body>
 <div>
-��Ҫ����������:
+需要处理的内容:
 </div>
 <textarea id="main" rows="10" cols="60" float="right"></textarea>
 <div>
-���ݳ�:
+数据池:
 </div>
 
 <textarea id="pool" rows="10" cols="60" ></textarea>
 <br/>
-����Ŀ��:<textarea id="reg" rows="2" cols="30" ></textarea>
-�滻Ϊ:<textarea id="reg_to" rows="2" cols="30" ></textarea>
-<button onclick="execute_regex()">�滻</button>
-���ݳ�ƥ��:(Ĭ�Ϸ���:&)
+查找目标:<textarea id="reg" rows="2" cols="30" ></textarea>
+替换为:<textarea id="reg_to" rows="2" cols="30" ></textarea>
+<button onclick="execute_regex()">替换</button>
+数据池匹配:(默认符号:&)
 <textarea id="pool_reg" rows="2" cols="30" ></textarea>
 <br/>
 <div>
-�������:
+处理结果:
 </div>
 <textarea id="result" rows="10" cols="60" ></textarea>
 </body>
 
 <Script >
 /*
-�����ṩ������ԭʼ������
-1 ���Ҳ��֧��
-2 ��ƥ�������֧��
+我们提供了以下原始能力：
+1 对右侧的支持
+2 对匹配次数的支持
 
-����
-�������ṩ�û�һ���߼����ܣ�һ���������������û���д.
-���ԶԽ�����ж��ƣ��������Ѿ������û�������ƥ������⡣
+另外
+可以向提供用户一个高级功能：一个处理函数，供用户填写.
+可以对结果进行定制，而我们已经帮助用户处理了匹配的难题。
 
-Todo:�滻��֧��\r\n
+Todo:替换卫支持\r\n
 
 */
 var _DIY = '&';
 
-var time; //�ڼ���ƥ��
+var time; //第几次匹配
 
 
-//��ȡ�滻Ϊ�ִ���TH
+//获取替换为字串，TH
 var Reg_to ;//= "&t:&1:&2:$2"
              /*
              1:A:S:w
@@ -57,9 +57,9 @@ var Reg_to ;//= "&t:&1:&2:$2"
              3:null:null:r
               */
 
-//�ַ������е��ַ���
+//字符串库中的字符串
 var STRING_LIB ;//= "ASFG";
-//�ַ���ƥ���ַ���
+//字符串匹配字符串
 var LIB_REGEX ;//= /(\w)(\w)/ig;
 
 function fn(...rest)
@@ -68,9 +68,9 @@ function fn(...rest)
     console.log(rest);
 
     /*
-    ��ȡ�������������������һ��������,ѭ���滻TH���ַ���$0$1$2
+    获取捕获组的数量，并放在一个数组里,循环替换TH中字符串$0$1$2
      */
-    var TH = Reg_to; //TH��Ҫ�Ǿֲ���������Ϊ���ǻ��������޸ġ�
+    var TH = Reg_to; //TH需要是局部变量，因为我们会对其进行修改。
 
     for (var Reg_index = 0; Reg_index < rest.length - 3 + 1; ++Reg_index)
     {
@@ -78,23 +78,27 @@ function fn(...rest)
         TH = TH.replace(firstArgOfReg, rest[Reg_index]);
     }
 
-    //��ȡ���εĴ��� ���滻TH���ַ���&t
+    //获取本次的次数 ，替换TH中字符串&t
     TH = TH.replace("&t", time);
 
-    //��ȡ�ַ�������ƥ����ַ���:&0,&1��ѭ���滻
+    //\x0d \r \x0a \n
+	TH = TH.replace("\\r", "\x0d");
+	TH = TH.replace("\\n", "\x0a");
+	
+    //获取字符串库中匹配的字符串:&0,&1并循环替换
 
-    var LIB_RESULT = LIB_REGEX.exec(STRING_LIB); //��Ҫ���������ƥ����
+    var LIB_RESULT = LIB_REGEX.exec(STRING_LIB); //需要在外面才能匹配多次
 
     if (LIB_RESULT == null)
     {
 		/*
-		eg�����200��ƥ�䣬�Ҳ�100���ṩƥ�䣬��ô101�û��ƥ�䡣
-		�����Ƿ������ṩѭ�������101��ƥ���Ҳ�1�
+		eg：左侧200项匹配，右侧100项提供匹配，那么101项将没有匹配。
+		现在是方案是提供循环，左侧101项匹配右侧1项。
 		*/
         LIB_RESULT = LIB_REGEX.exec(STRING_LIB);//
     }
 	if( LIB_RESULT == null)
-	{ alert("�ṩ��������ݳ�û���κ�ƥ��");}
+	{ alert("提供正则对内容池没有任何匹配");}
 	else
 	{
 		for (var Lib_index = 0; Lib_index < LIB_RESULT.length; ++Lib_index)
@@ -111,7 +115,7 @@ function fn(...rest)
 
 }
 /*
-���û�����滻��˵���Ѿ�������滻��
+如果没有做替换就说明已经完成了替换？
 
 */
 function execute_regex( )
@@ -120,7 +124,7 @@ function execute_regex( )
 	
 	var str = document.getElementById('main').value;
 	var Reg_string = document.getElementById('reg').value;
-	var rExpReg = new RegExp(Reg_string,"g");// /i ���Դ�Сд 
+	var rExpReg = new RegExp(Reg_string,"g");// /i 忽略大小写 
 	
 	Reg_to = document.getElementById('reg_to').value;
 	STRING_LIB = document.getElementById('pool').value;
