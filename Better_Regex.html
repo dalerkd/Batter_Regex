@@ -40,9 +40,10 @@
 可以向提供用户一个高级功能：一个处理函数，供用户填写.
 可以对结果进行定制，而我们已经帮助用户处理了匹配的难题。
 
-Todo:替换卫支持\r\n
+
 
 */
+var Have_err = false;//匹配池没有任何匹配项存在
 var _DIY = '&';
 
 var time; //第几次匹配
@@ -97,8 +98,15 @@ function fn(...rest)
 		*/
         LIB_RESULT = LIB_REGEX.exec(STRING_LIB);//
     }
-	if( LIB_RESULT == null)
-	{ alert("提供正则对内容池没有任何匹配");}
+		if( LIB_RESULT == null)
+	{
+		if(false==Have_err)
+		{
+			alert("提供正则对内容池没有任何匹配");
+			Have_err = true;
+		}
+		
+	}
 	else
 	{
 		for (var Lib_index = 0; Lib_index < LIB_RESULT.length; ++Lib_index)
