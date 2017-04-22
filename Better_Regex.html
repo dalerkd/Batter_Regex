@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <head>
 <style>
-#main,pool,div{
+#main,pool,div,p{
 	float:left;
 	
 }
@@ -22,23 +22,36 @@
 <br/>
 查找目标:<textarea id="reg" rows="2" cols="30" ></textarea>
 替换为:<textarea id="reg_to" rows="2" cols="30" ></textarea>
+
+
 <button onclick="execute_regex()">替换</button>
 数据池匹配:(默认符号:&)
 <textarea id="pool_reg" rows="2" cols="30" ></textarea>
+
 <br/>
-<div>
-处理结果:
-</div>
+Matches Count:<li id="Count">0</li>Match Result:
 <textarea id="result" rows="10" cols="60" ></textarea>
+
+<div>
+<p><input type="checkbox" id="ignore_case_main" />待处理忽略大小写</p> 
+<p><input type="checkbox" id="multi_line_reg_main" />待处理多行匹配</p> 
+
+<br/>
+
+<p><input type="checkbox" id="ignore_case_pool"/>数据池忽略大小写</p> 
+<p><input type="checkbox" id="multi_line_reg_pool" />数据池多行匹配</p> 
+</div>
+
 </body>
 
 <Script >
 /*
 我们提供了以下原始能力：
-1 对右侧的支持
+1 对数据池的支持：
+"数据池"指的是可以用来自由插入被匹配者的数据，比如你打算把B数据合并入A数据，B数据就是数据池。
 2 对匹配次数的支持
 
-另外
+未来可能：
 可以向提供用户一个高级功能：一个处理函数，供用户填写.
 可以对结果进行定制，而我们已经帮助用户处理了匹配的难题。
 
@@ -48,7 +61,7 @@
 var Have_err = false;//匹配池没有任何匹配项存在
 var _DIY = '&';
 
-var time; //第几次匹配
+var times; //第几次匹配
 
 
 //获取替换为字串，TH
@@ -82,7 +95,7 @@ function fn(...rest)
     }
 
     //获取本次的次数 ，替换TH中字符串&t
-    TH = TH.replace("&t", time);
+    TH = TH.replace("&t", times);
 
     //\x0d \r \x0a \n
 	TH = TH.replace("\\r", "\x0d");
@@ -119,7 +132,7 @@ function fn(...rest)
         }
 	}
 	
-    ++time;
+    ++times;
 
     return TH;
 
@@ -131,19 +144,77 @@ function fn(...rest)
 function execute_regex( )
 {
 	Have_err = false;
-	time = 1;
+	times = 1;
+	Count = 0;
 	
 	var str = document.getElementById('main').value;
 	var Reg_string = document.getElementById('reg').value;
-	var rExpReg = new RegExp(Reg_string,"g");// /i 忽略大小写 
+	
+	var rExpReg;
+	if(document.getElementById('ignore_case_main').checked==true)// /i 忽略大小写 
+	{
+		if(document.getElementById('multi_line_reg_main').checked==true)// /m跨行匹配
+		{
+			rExpReg = new RegExp(Reg_string,"gim");
+		}
+		else
+		{
+			rExpReg = new RegExp(Reg_string,"gi");
+		}
+		
+	}
+	else
+	{
+		if(document.getElementById('multi_line_reg_main').checked==true)
+		{
+			rExpReg = new RegExp(Reg_string,"gm");
+		}
+		else
+		{
+			rExpReg = new RegExp(Reg_string,"g");
+		}
+	}
+	
+	
+	
 	
 	Reg_to = document.getElementById('reg_to').value;
 	STRING_LIB = document.getElementById('pool').value;
 	
 	poolReg = document.getElementById('pool_reg').value;
-	LIB_REGEX = new RegExp(poolReg,"gi");
+	
+	if(document.getElementById('ignore_case_pool').checked==true)// /i 忽略大小写 
+	{
+		if(document.getElementById('multi_line_reg_pool').checked==true)// /m跨行匹配
+		{
+			LIB_REGEX = new RegExp(poolReg,"gim");
+		}
+		else
+		{
+			LIB_REGEX = new RegExp(poolReg,"gi");
+		}
+		
+	}
+	else
+	{
+		if(document.getElementById('multi_line_reg_pool').checked==true)
+		{
+			LIB_REGEX = new RegExp(poolReg,"gm");
+		}
+		else
+		{
+			LIB_REGEX = new RegExp(poolReg,"g");
+		}
+	}
+	
+	
+	
+	
 	
 	document.getElementById('result').value = str.replace(rExpReg, fn);
+	
+	count = times - 1;
+	document.getElementById('Count').innerText=count;
 }
 
 
