@@ -95,12 +95,14 @@ function fn(...rest)
     }
 
     //获取本次的次数 ，替换TH中字符串&t
-    TH = TH.replace("&t", times);
+	TH = TH.replace(new RegExp("&t","g"),times);
+    //TH = TH.replace("&t", times);
 
     //\x0d \r \x0a \n
-	TH = TH.replace("\\r", "\x0d");
-	TH = TH.replace("\\n", "\x0a");
-	
+	var regT_r = /\\r/g;
+	TH = TH.replace(regT_r,"\x0d");
+	var regT_n = /\\n/g;
+	TH = TH.replace(regT_n,"\x0a");
     //获取字符串库中匹配的字符串:&0,&1并循环替换
 
     var LIB_RESULT = LIB_REGEX.exec(STRING_LIB); //需要在外面才能匹配多次
