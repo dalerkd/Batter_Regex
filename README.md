@@ -1,6 +1,7 @@
 # Batter_Regex
 关于本项目详细介绍和例子请阅读：[实现 一个满足你特殊癖好的 正则](http://blog.csdn.net/dalerkd/article/details/71257696)
 
+在线地址请访问:[https://dalerkd.github.io/正则](https://dalerkd.github.io/定投/)
 ## 目的
 
 实现一个更实用的正则工具，包括**分别匹配并合并两块数据**的能力。
